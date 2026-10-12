@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tài khoản · Trọ Việt</title>
+  <link rel="stylesheet" href="./styles.css"><script src="./admin.js" defer></script>
+</head>
+<body class="dashboard">
+  <aside class="sidebar"><a class="brand" href="/ui/admin.html"><span class="brand-mark">T</span>Trọ Việt</a>
+    <p class="nav-label">KHÔNG GIAN LÀM VIỆC</p>
+    <button class="nav-item active" id="accounts-nav"><span aria-hidden="true">▤</span> Quản lý tài khoản</button>
+    <button class="nav-item" id="profile-nav"><span aria-hidden="true">◎</span> Tài khoản của tôi</button>
+    <button class="nav-item" id="password-nav"><span aria-hidden="true">◇</span> Đổi mật khẩu</button>
+    <div class="sidebar-bottom"><div class="avatar" id="avatar">TV</div><div><strong id="sidebar-name">Đang tải…</strong><small id="sidebar-role"></small></div></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><span>Auth & User Service</span><button id="logout" class="outline">Đăng xuất <span aria-hidden="true">↗</span></button></header>
+    <main>
+      <p id="global-message" class="banner" role="status" aria-live="polite" hidden></p>
+      <section id="admin-section" hidden>
+        <div class="page-heading"><div><p class="eyebrow">QUẢN TRỊ HỆ THỐNG</p><h1>Quản lý tài khoản</h1><p class="muted">Cấp tài khoản và quản lý quyền truy cập của người dùng.</p></div><button class="primary" id="create-user">+ Tạo tài khoản</button></div>
+        <div class="stats" id="stats">
+          <article><span>Tổng tài khoản</span><strong id="stat-total">—</strong><small>Admin và chủ trọ</small></article>
+          <article><span>Chủ trọ</span><strong id="stat-landlords">—</strong><small>Vai trò LANDLORD</small></article>
+          <article><span>Quản trị viên</span><strong id="stat-admins">—</strong><small>Vai trò ADMIN</small></article>
+          <article><span>Đang hoạt động</span><strong id="stat-active" class="green">—</strong><small>Được phép đăng nhập</small></article>
+          <article><span>Đã khóa</span><strong id="stat-locked" class="amber">—</strong><small>Ngừng quyền truy cập</small></article>
+        </div>
+        <section class="panel">
+          <div class="panel-heading"><h2>Danh sách tài khoản</h2><button id="refresh" class="text-button">↻ Làm mới</button></div>
+          <form id="filters" class="filters">
+            <div class="search"><label class="sr-only" for="search">Tìm tài khoản</label><input id="search" maxlength="100" placeholder="Tìm họ tên, email hoặc SĐT…" type="search"></div>
+            <label class="sr-only" for="filter-role">Vai trò</label><select id="filter-role"><option value="">Tất cả vai trò</option value="ADMIN">Quản trị viên</option><option value="LANDLORD">Chủ trọ</option></select>
+            <label class="sr-only" for="filter-status">Trạng thái</label><select id="filter-status"><option value="">Tất cả trạng thái</option value="ACTIVE">Hoạt động</option><option value="LOCKED">Đã khóa</option></select>
+            <button class="outline" type="submit">Tìm kiếm</button>
+          </form>
+          <div class="table-wrap"><table><thead><tr><th>NGƯỜI DÙNG</th><th>LIÊN HỆ</th><th>VAI TRÒ</th><th>TRẠNG THÁI</th><th>THAO TÁC</th></tr></thead><tbody id="users"></tbody></table></div>
+          <p id="table-state" class="empty-state" role="status"></p>
+          <footer class="pagination"><span id="total-label"></span><div><button id="previous" class="outline" disabled>← Trước</button><span id="page-label"></span><button id="next" class="outline" disabled>Sau →</button></div></footer>
+        </section>
+      </section>
+      <section id="profile-section" hidden>
+        <div class="page-heading"><div><p class="eyebrow">TÀI KHOẢN CỦA TÔI</p><h1 id="profile-title">Thông tin cá nhân</h1><p class="muted">Thông tin đăng nhập và quyền truy cập của bạn.</p></div><button id="profile-password" class="primary">Đổi mật khẩu</button></div>
+        <section class="panel profile-panel"><dl id="my-profile" class="detail-grid"></dl></section>
+      </section>
+    </main>
+    <footer class="app-footer">Trọ Việt · Quản lý tài khoản</footer>
+  </div>
+
+  <dialog id="user-dialog"><form id="user-form">
+    <div class="dialog-heading"><div><p class="eyebrow">QUẢN LÝ TÀI KHOẢN</p><h2 id="user-title">Tạo tài khoản</h2></div><button type="button" class="icon-button close-dialog" aria-label="Đóng">✕</button></div>
+    <label for="full-name">Họ tên *</label><input id="full-name" maxlength="100" required autocomplete="name">
+    <label for="user-email">Email *</label><input id="user-email" type="email" maxlength="255" required autocomplete="off">
+    <label for="user-phone">Số điện thoại</label><input id="user-phone" type="tel" maxlength="20" placeholder="8–15 chữ số, có thể bắt đầu bằng +" autocomplete="off">
+    <div id="create-password-field"><label for="user-password">Mật khẩu *</label><input id="user-password" type="password" minlength="10" maxlength="128" autocomplete="new-password"><small class="muted">Từ 10 đến 128 ký tự.</small></div>
+    <div class="form-columns"><div><label for="user-role">Vai trò</label><select id="user-role"><option value="LANDLORD">Chủ trọ</option><option value="ADMIN">Quản trị viên</option></select></div><div><label for="user-status">Trạng thái</label><select id="user-status"><option value="ACTIVE">Hoạt động</option><option value="LOCKED">Đã khóa</option></select></div></div>
+    <small class="muted">Đổi vai trò hoặc trạng thái sẽ thu hồi các phiên đăng nhập của tài khoản.</small>
+    <p id="user-error" class="form-message" role="alert"></p>
+    <div class="dialog-actions"><button type="button" class="outline close-dialog">Hủy</button><button type="submit" class="primary" id="save-user">Tạo tài khoản</button></div>
+  </form></dialog>
+
+  <dialog id="detail-dialog"><div class="dialog-heading"><h2>Chi tiết tài khoản</h2><button class="icon-button close-dialog" aria-label="Đóng">✕</button></div><dl id="user-detail" class="detail-grid"></dl><div class="dialog-actions"><button class="outline close-dialog">Đóng</button></div></dialog>
+
+  <dialog id="password-dialog"><form id="password-form">
+    <div class="dialog-heading"><div><p class="eyebrow">BẢO MẬT TÀI KHOẢN</p><h2>Đổi mật khẩu</h2></div><button type="button" class="icon-button close-dialog" aria-label="Đóng">✕</button></div>
+    <p class="muted">Sau khi đổi mật khẩu, bạn cần đăng nhập lại trên các thiết bị.</p>
+    <label for="current-password">Mật khẩu hiện tại</label><input id="current-password" type="password" maxlength="128" autocomplete="current-password" required>
+    <label for="new-password">Mật khẩu mới</label><input id="new-password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required>
+    <label for="confirm-password">Xác nhận mật khẩu mới</label><input id="confirm-password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required>
+    <small class="muted">Mật khẩu mới từ 10 đến 128 ký tự.</small><p id="password-error" class="form-message" role="alert"></p>
+    <div class="dialog-actions"><button type="button" class="outline close-dialog">Hủy</button><button class="primary" type="submit" id="save-password">Lưu mật khẩu</button></div>
+  </form></dialog>
+
+  <dialog id="confirm-dialog"><div class="dialog-heading"><h2 id="confirm-title"></h2><button class="icon-button close-dialog" aria-label="Đóng">✕</button></div><p id="confirm-description"></p><p id="confirm-error" class="form-message" role="alert"></p><div class="dialog-actions"><button class="outline close-dialog">Hủy</button><button id="confirm-action" class="danger">Xác nhận</button></div></dialog>
+</body>
+</html>
